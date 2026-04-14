@@ -21,9 +21,11 @@ jobs:
               gcc-loongarch64-linux-gnu binutils-loongarch64-linux-gnu
           curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
           apt-get install -y nodejs
+
       - name: Install Rust
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
       - name: Checkout Bitwarden
         uses: actions/checkout@v5
         with:
@@ -34,6 +36,7 @@ jobs:
         run: |
           curl -L https://github.com/AOSC-Tracking/bitwarden/commit/dbd3c5dd6926501b0b3e30fff4a8bbc6bb719666.patch | git apply
           curl -L https://github.com/AOSC-Tracking/bitwarden/commit/8506f52b5f021f48f7fbd4873732e66e960eb7f3.patch | git apply
+
       - name: Build native modules
         env:
           CARGO_TARGET_LOONGARCH64_UNKNOWN_LINUX_GNU_LINKER: loongarch64-linux-gnu-gcc
@@ -42,17 +45,20 @@ jobs:
           npm install
           cd apps/desktop/desktop_native
           node build.js --target=loongarch64-unknown-linux-gnu --release
+
       - name: Prepare artifacts
         run: |
           mkdir -p release
           cp apps/desktop/desktop_native/napi/desktop_napi.linux-loong64-gnu.node release/
           cp apps/desktop/desktop_native/dist/desktop_proxy.linux-loong64 release/
           cp apps/desktop/desktop_native/dist/libprocess_isolation.so release/
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v5
         with:
           name: bitwarden-loongarch64-binaries-${{ inputs.tag }}
           path: release
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
@@ -60,4 +66,4 @@ jobs:
           files: |
             release/desktop_napi.linux-loong64-gnu.node
             release/desktop_proxy.linux-loong64
-            release/libprocess_isolation.so 
+            release/libprocess_isolation.so
