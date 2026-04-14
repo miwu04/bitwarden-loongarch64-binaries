@@ -32,6 +32,7 @@ jobs:
         run: |
           git config --global user.email "build@example.com"
           git config --global user.name "Build"
+          git config --global --add safe.directory '*'
       - name: Apply patches
         run: |
           curl -L https://github.com/AOSC-Tracking/bitwarden/commit/dbd3c5dd6926501b0b3e30fff4a8bbc6bb719666.patch | git am
