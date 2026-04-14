@@ -17,16 +17,16 @@ jobs:
       - name: Install system dependencies
         run: |
           apt-get update
-          apt-get install -y \
-              curl git build-essential pkg-config ca-certificates \
-              gcc-loongarch64-linux-gnu binutils-loongarch64-linux-gnu \
-              nodejs npm
+          apt-get install -y curl git build-essential pkg-config ca-certificates \
+              gcc-loongarch64-linux-gnu binutils-loongarch64-linux-gnu
+          curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+          apt-get install -y nodejs
       - name: Install Rust
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           echo "PATH=$HOME/.cargo/bin:$PATH" >> $GITHUB_ENV
       - name: Checkout Bitwarden
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: bitwarden/clients
           ref: ${{ inputs.tag }}
@@ -53,12 +53,12 @@ jobs:
           cp apps/desktop/desktop_native/dist/desktop_proxy.linux-loong64 release/
           cp apps/desktop/desktop_native/dist/libprocess_isolation.so release/
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: bitwarden-loongarch64-binaries-${{ inputs.tag }}
           path: release
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.tag }}
           files: |
