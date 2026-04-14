@@ -1,0 +1,52 @@
+name: Build Loongarch64 Binaries
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name for artifacts'
+        required: true
+        type: string
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:13
+    steps:
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y \
+              curl git build-essential pkg-config ca-certificates \
+              gcc-loongarch64-linux-gnu binutils-loongarch64-linux-gnu \
+              nodejs npm
+      - name: Install Rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          echo "$HOME/.cargo/env" >> $GITHUB_ENV
+      - name: Checkout Bitwarden
+        uses: actions/checkout@v4
+        with:
+          repository: bitwarden/clients
+          ref: ${{ inputs.tag }}
+      - name: Configure git
+        run: |
+          git config --global user.email "build@example.com"
+          git config --global user.name "Build"
+      - name: Apply patches
+        run: |
+          curl -L https://github.com/AOSC-Tracking/bitwarden/commit/dbd3c5dd6926501b0b3e30fff4a8bbc6bb719666.patch | git am
+          curl -L https://github.com/AOSC-Tracking/bitwarden/commit/8506f52b5f021f48f7fbd4873732e66e960eb7f3.patch | git am
+      - name: Build native modules
+        env:
+          CARGO_TARGET_LOONGARCH64_UNKNOWN_LINUX_GNU_LINKER: loongarch64-linux-gnu-gcc
+        run: |
+          cd apps/desktop/desktop_native
+          node build.js --target=loongarch64-unknown-linux-gnu --release
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bitwarden-loongarch64-binaries-${{ inputs.tag }}
+          path: |
+            apps/desktop/desktop_native/napi/desktop_napi.linux-loong64-gnu.node
+            apps/desktop/desktop_native/dist/desktop_proxy
+            apps/desktop/desktop_native/dist/libprocess_isolation.so
