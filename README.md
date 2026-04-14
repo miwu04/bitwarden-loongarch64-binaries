@@ -1,5 +1,7 @@
 # Bitwarden LoongArch64 Binaries
 
+[English](./README_en.md)
+
 使用 GitHub Actions 构建 Bitwarden Desktop 的 LoongArch64 原生模块。
 
 ## 使用方法
