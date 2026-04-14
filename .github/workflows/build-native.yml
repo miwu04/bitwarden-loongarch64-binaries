@@ -41,6 +41,7 @@ jobs:
         env:
           CARGO_TARGET_LOONGARCH64_UNKNOWN_LINUX_GNU_LINKER: loongarch64-linux-gnu-gcc
         run: |
+          npm install
           cd apps/desktop/desktop_native
           node build.js --target=loongarch64-unknown-linux-gnu --release
       - name: Upload artifacts
