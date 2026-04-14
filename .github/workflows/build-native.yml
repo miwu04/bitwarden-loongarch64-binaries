@@ -52,3 +52,11 @@ jobs:
             apps/desktop/desktop_native/napi/desktop_napi.linux-loong64-gnu.node
             apps/desktop/desktop_native/dist/desktop_proxy
             apps/desktop/desktop_native/dist/libprocess_isolation.so
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          files: |
+            apps/desktop/desktop_native/napi/desktop_napi.linux-loong64-gnu.node
+            apps/desktop/desktop_native/dist/desktop_proxy
+            apps/desktop/desktop_native/dist/libprocess_isolation.so 
